@@ -1,67 +1,80 @@
 import pygame, sys, random
 
-def create_pipe():
-    random_pipe_pos = random.choice(pipe_height)
-    bottom_pipe = pipe_surface.get_rect(midtop = (500,random_pipe_pos))
-    top_pipe = pipe_surface.get_rect(midbottom = (500,random_pipe_pos - 200))
-    return bottom_pipe,top_pipe
-
-def move_pipes(pipes):
-	for pipe in pipes:
-		pipe.centerx -= 5
-	return pipes
-
-def draw_pipes(pipes):
-	for pipe in pipes:
-		if pipe.bottom >= 600:
-			screen.blit(pipe_surface,pipe)
-		else:
-			flip_pipe = pygame.transform.flip(pipe_surface,False,True)
-			screen.blit(flip_pipe,pipe)
-
-def remove_pipes(pipes):
-	for pipe in pipes:
-		if pipe.centerx == -600:
-			pipes.remove(pipe)
-	return pipes
+MAX_WIDTH = 1024
+MAX_HEIGHT = 512
 
 
-# <--
-game_active = True
+# def character(x, y):
+#     global gamepad, amongCharacter
+# 	gamepad.blit(amongCharacter, (x,y))
 
-pygame.mixer.pre_init(frequency = 44100, size = 16, channels = 1, buffer = 512)
-pygame.init()
-screen = pygame.display.set_mode((900,600))
+def main():
+    global gamepad, amongCharacter, clock, background1, background2
 
-bg_surface = pygame.image.load('background.jpg').convert()
-bg_surface = pygame.transform.scale2x(bg_surface)
+    # <-- set screen, fps
+    pygame.init()
+    pygame.display.set_caption('AmongUs')
+    screen = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
+    fps = pygame.time.Clock()
 
-pipe_surface = pygame.image.load('obstacle.png')
-pipe_surface = pygame.transform.scale(pipe_surface, (100, 250))
-pipe_list = []
-SPAWNPIPE = pygame.USEREVENT
-pygame.time.set_timer(SPAWNPIPE,1200)
-pipe_height = [150,300,450]
-# -->
+    # image
+    amongCharacter = pygame.image.load('amongus.png')
+    background1 = pygame.image.load('background.jpeg')
+    background2 = background1.copy()
 
-while True:
-    for event in pygame.event.get():
-	    if event.type == pygame.QUIT:
-		    pygame.quit()
-		    sys.exit()
+    clock = pygame.time.Clock()
+    # -->
 
-	    if event.type == pygame.KEYDOWN:
-		    pipe_list.clear()
+	# background
+    x = MAX_WIDTH * 0.05
+    y = MAX_HEIGHT * 0.8
+    y_change = 0
 
-	    if event.type == SPAWNPIPE:
-        	pipe_list.extend(create_pipe())
+    background1_x = 0
+    background2_x = MAX_WIDTH
 
-    screen.blit(bg_surface,(0,0))
+    crashed = False
 
-    if game_active:
-		# Pipes
-    	pipe_list = move_pipes(pipe_list)
-    	pipe_list = remove_pipes(pipe_list)
-    	draw_pipes(pipe_list)
+	# tree
+    imgTree = pygame.image.load('tree.png')
+    tree_height = imgTree.get_size()[1]
+    tree_x = MAX_WIDTH
+    tree_y = MAX_HEIGHT - tree_height
 
-    pygame.display.update()
+    while not crashed:
+        screen.fill((255, 255, 255))
+
+        # event check
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                crashed = True
+                pygame.quit()
+                sys.exit()
+
+        background1_x -= 2
+        background2_x -= 2
+
+        if background1_x == -MAX_WIDTH:
+            background1_x = MAX_WIDTH
+
+        if background2_x == -MAX_WIDTH:
+            background2_x = MAX_WIDTH
+
+        screen.blit(background1, (background1_x, 0))
+        screen.blit(background2, (background2_x, 0))
+
+		# tree move
+        tree_x -= 12.0
+        if tree_x <= 0:
+            tree_x = MAX_WIDTH
+
+        # draw tree
+        screen.blit(imgTree, (tree_x, tree_y))
+
+        # update
+        pygame.display.update()
+        fps.tick(30)
+
+
+if __name__ == '__main__':
+    main()
