@@ -4,7 +4,12 @@ WHITE = (255, 255, 255)
 pad_width = 1024
 pad_height = 512
 
-# <--character
+#<-- background
+def back(x,y):
+    global gamepad, background
+    gamepad.blit(background, (x,y))
+
+# <-- character
 def among(x,y):
     global gamepad, amongus
     gamepad.blit(amongus, (x,y))
@@ -16,6 +21,8 @@ def runGame():
     x = pad_width * 0.05
     y = pad_height * 0.8
     y_change = 0
+
+    background_x = 0
 
     # 게임 종료를 위한 변수
     crashed = False
@@ -39,6 +46,7 @@ def runGame():
         y += y_change
 
         gamepad.fill(WHITE)
+        back(background_x, 0)
         among(x,y)
         pygame.display.update()
         clock.tick(60)
@@ -50,7 +58,7 @@ def runGame():
 
 # 게임을 초기화하고 시작하는 함수
 def initGame():
-    global gamepad, clock, amongus
+    global gamepad, clock, amongus, background
 
     # pygame 라이브러리 초기화
     # 처음에 항상 pygame.init() 호출 필수
@@ -58,6 +66,7 @@ def initGame():
     gamepad = pygame.display.set_mode((pad_width, pad_height))
     pygame.display.set_caption("PyFlying")
     amongus = pygame.image.load('amongus.png')
+    background = pygame.image.load('background.jpeg')
 
     # FPS 설정을 위해 clock 생성 (runGame에서 사용 -> clock.tick(60) -> 60프레임)
     clock = pygame.time.Clock()
