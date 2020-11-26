@@ -4,6 +4,8 @@ WHITE = (255, 255, 255)
 pad_width = 1024
 pad_height = 512
 background_width = 1024
+amongus_width = 90
+amongus_height = 120
 
 #<-- background, character, obstacle
 def drawObject(obj, x,y):
@@ -48,12 +50,16 @@ def runGame():
                     y_change = 0
 
         y += y_change
-
         gamepad.fill(WHITE)
 
         # 배경 2 씩 이동
         background1_x -= 2
         background2_x -= 2
+        # 배경이 다 지나가면 다시 설정
+        if background1_x == -background_width:
+            background1_x = background_width
+        if background2_x == -background_width:
+            background2_x = background_width
 
         # 장애물이 없으면 30씩 이동(시간 지체)
         # 장애물이 있으면 15씩 이동
@@ -61,19 +67,20 @@ def runGame():
             obstacle_x -= 50
         else:
             obstacle_x -= 15
-
         # 장애물이 다 지나가면 다시 설정
         if obstacle_x <= 0:
             obstacle_x = pad_width
-            obstacle_y = random.randrange(0, pad_height)
+            obstacle_y = random.randrange(0, (pad_height - amongus_height))
             random.shuffle(obstacles)
             obstacle = obstacles[0]
 
-        # 배경이 다 지나가면 다시 설정
-        if background1_x == -background_width:
-            background1_x = background_width
-        if background2_x == -background_width:
-            background2_x = background_width
+        # position
+        # 캐릭터가 화면 안에서만 움직이게
+        y += y_change
+        if y < 0:
+            y = 0
+        elif y > pad_height - amongus_height:
+            y = pad_height - amongus_height
 
         # 화면에 출력
         drawObject(background1, background1_x, 0)
