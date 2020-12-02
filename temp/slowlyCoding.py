@@ -53,7 +53,7 @@ def drawObject(obj, x,y):
 
 # <-- initGame() 에서 호출!
 def runGame():
-    global gamepad, clock, obstacles, background1, background2, background3
+    global gamepad, clock, obstacles, background1, background2, background3, underBackground
     global test, test2, test3, test4, jump_img, tree
 
     # 플레이어 자동차 생성
@@ -63,12 +63,13 @@ def runGame():
 
     leg_swap = 0;
 
-    x = pad_width * 0.05
-    y = pad_height * 0.8
+    # x = pad_width * 0.05
+    # y = pad_height * 0.8
 
     background1_x = 0
     background2_x = background_width
     background3_x = background_width * 2
+    underBack_x = 0
 
     obstacle_x = pad_width
     obstacle_y = random.randrange(0, pad_height)
@@ -119,6 +120,7 @@ def runGame():
         background1_x -= 2
         background2_x -= 2
         background3_x -= 2
+        underBack_x -= 2
         # 배경이 다 지나가면 다시 설정
         if background1_x == -(background_width*2):
             background1_x = background_width*2
@@ -126,6 +128,9 @@ def runGame():
             background2_x = background_width*2
         if background3_x == -(background_width*2):
             background3_x = background_width*2
+
+        if underBack_x == -(underBack_x):
+            underBack_x = 0
 
         # 장애물이 없으면 60씩 이동(시간 지체)
         # 장애물이 있으면 20씩 이동
@@ -208,6 +213,7 @@ def runGame():
         drawObject(background1, background1_x, 0)
         drawObject(background2, background2_x, 0)
         drawObject(background3, background3_x, 0)
+        drawObject(underBackground, underBack_x, 0)
         if obstacle[1] != None:
             drawObject(obstacle[1], obstacle_x, obstacle_y)
         drawObject(tree, tree_x, tree_y)
@@ -224,7 +230,7 @@ def runGame():
 
 # 게임을 초기화하고 시작하는 함수
 def initGame():
-    global gamepad, clock, obstacles, background1, background2, background3
+    global gamepad, clock, obstacles, background1, background2, background3, underBackground
     global test, test2, test3, test4, jump_img, tree
     obstacles = []
 
@@ -242,6 +248,7 @@ def initGame():
     background1 = pygame.image.load('background.png')
     background2 = pygame.image.load('background2.png')
     background3 = pygame.image.load('background3.png')
+    underBackground = pygame.image.load('underBack_.png')
     obstacles.append((0, pygame.image.load('obstacle1.png')))
     obstacles.append((1, pygame.image.load('obstacle2.png')))
     tree = pygame.image.load('tree.png')
