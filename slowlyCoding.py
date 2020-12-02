@@ -13,6 +13,8 @@ obstacle1_width = 140
 obstacle1_height = 61
 obstacle2_width = 86
 obstacle2_height = 59
+tree_width = 60
+tree_height = 131
 
 # 속도와 질량 기본 값
 VELOCITY = 7  # 속도
@@ -52,7 +54,7 @@ def drawObject(obj, x,y):
 # <-- initGame() 에서 호출!
 def runGame():
     global gamepad, clock, obstacles, background1, background2, background3
-    global test, test2, test3, test4, jump_img
+    global test, test2, test3, test4, jump_img, tree
 
     # 플레이어 자동차 생성
     player = jump.Characters(VELOCITY, MASS)
@@ -63,7 +65,6 @@ def runGame():
 
     x = pad_width * 0.05
     y = pad_height * 0.8
-    # y_change = 0
 
     background1_x = 0
     background2_x = background_width
@@ -73,6 +74,9 @@ def runGame():
     obstacle_y = random.randrange(0, pad_height)
     random.shuffle(obstacles)
     obstacle = obstacles[0]
+
+    tree_x = pad_width
+    tree_y = pad_height - tree_height
 
     # 게임 종료를 위한 변수
     crashed = False
@@ -123,18 +127,24 @@ def runGame():
         if background3_x == -(background_width*2):
             background3_x = background_width*2
 
-        # 장애물이 없으면 50씩 이동(시간 지체)
-        # 장애물이 있으면 15씩 이동
+        # 장애물이 없으면 60씩 이동(시간 지체)
+        # 장애물이 있으면 20씩 이동
         if obstacle[1] == None:
-            obstacle_x -= 50
+            obstacle_x -= 60
         else:
-            obstacle_x -= 15
+            if obstacle[0] == 1:
+                obstacle_y += 5
+            obstacle_x -= 20
         # 장애물이 다 지나가면 다시 설정
         if obstacle_x <= 0:
             obstacle_x = pad_width
             obstacle_y = random.randrange(0, (pad_height - amongus_height))
             random.shuffle(obstacles)
             obstacle = obstacles[0]
+
+        tree_x -= 20
+        if tree_x <= 0:
+            tree_x = pad_width
 
         # position
         # 캐릭터가 화면 안에서만 움직이게
@@ -159,10 +169,13 @@ def runGame():
             #         (y+player.rect.y > obstacle_y and y + player.rect.y < obstacle_y + obstacle_height):
             #         crash()
             # 바꾼 코드
-            if player.rect.x >= obstacle_x:
-                if(player.rect.y > obstacle_y and player.rect.y < obstacle_y + obstacle_height) or\
-                    (player.rect.y > obstacle_y and player.rect.y < obstacle_y + obstacle_height):
+            if (player.rect.x >= obstacle_x and player.rect.x <= obstacle_x + obstacle_width):
+                if(player.rect.y > obstacle_y and player.rect.y < obstacle_y + obstacle_height):
                     crash()
+
+        if(player.rect.x >= tree_x and player.rect.x <= tree_x + tree_width):
+            if(player.rect.y > tree_y and player.rect.y < tree_y + tree_height):
+                crash()
 
 
         ''' 게임 코드 작성 '''
@@ -197,11 +210,12 @@ def runGame():
         drawObject(background3, background3_x, 0)
         if obstacle[1] != None:
             drawObject(obstacle[1], obstacle_x, obstacle_y)
+        drawObject(tree, tree_x, tree_y)
         # 플레이어 캐릭터 화면에 그려주기
         player.draw_Characters(gamepad)
 
         pygame.display.update()
-        clock.tick(15)
+        clock.tick(20)
 
     # 초기화 한 PyGame 종료
     pygame.quit()
@@ -211,7 +225,7 @@ def runGame():
 # 게임을 초기화하고 시작하는 함수
 def initGame():
     global gamepad, clock, obstacles, background1, background2, background3
-    global test, test2, test3, test4, jump_img
+    global test, test2, test3, test4, jump_img, tree
     obstacles = []
 
     # pygame 라이브러리 초기화
@@ -230,8 +244,9 @@ def initGame():
     background3 = pygame.image.load('background3.png')
     obstacles.append((0, pygame.image.load('obstacle1.png')))
     obstacles.append((1, pygame.image.load('obstacle2.png')))
+    tree = pygame.image.load('tree.png')
 
-    # 난이도 조절 가능
+    # 장애물 갯수 조절
     for i in range(3):
         obstacles.append((i+2, None))
 
