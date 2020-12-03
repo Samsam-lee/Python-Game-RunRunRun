@@ -33,7 +33,7 @@ class Characters:
     '''update'''
 
     def update(self, VELOCITY, pad_height):
-        f = 0.7;
+        f = 0.6;
         # isJump 값이 0보다 큰지 확인
         if self.isJump > 0:
             # isJump 값이 2일 경우 속도를 리셋
@@ -55,7 +55,7 @@ class Characters:
             self.rect.y -= round(F)
 
             # 속도 줄여줌
-            self.v -= 3
+            self.v -= 1
 
             # 바닥에 닿았을때, 변수 리셋
             if self.rect.bottom > pad_height:
