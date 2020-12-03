@@ -16,8 +16,12 @@ obstacle1_width = 140
 obstacle1_height = 61
 obstacle2_width = 86
 obstacle2_height = 59
-tree_width = 60
-tree_height = 131
+knife_width = 157
+knife_height = 99
+oc_width = 200
+oc_height = 254
+
+crashed = 3
 
 # 속도와 질량 기본 값
 VELOCITY = 7  # 속도
@@ -44,8 +48,10 @@ def dispMessage(text):
 
 # <-- crash
 def crash():
-    global gamepad
-    dispMessage('Crashed!')
+    global gamepad, crashed
+    crashed -= 1
+    if crashed == 0: 
+        dispMessage('End!')
 # -->
 
 # <-- background, character, obstacle
@@ -60,7 +66,7 @@ def drawObject(obj, x,y):
 # 게임을 초기화하고 시작하는 함수
 def initGame():
     global gamepad, clock, obstacles, background1, background2, background3, underBackground
-    global test, test2, test3, test4, jump_img, tree
+    global test, test2, test3, test4, jump_img, oc, crashed, knife
     obstacles = []
 
     # pygame 라이브러리 초기화
@@ -80,7 +86,8 @@ def initGame():
     underBackground = pygame.image.load('./assets/image/underBack.png')
     obstacles.append((0, pygame.image.load('./assets/image/obstacle1.png')))
     obstacles.append((1, pygame.image.load('./assets/image/obstacle2.png')))
-    tree = pygame.image.load('./assets/image/tree.png')
+    obstacles.append((2, pygame.image.load('./assets/image/knife.png')))
+    oc = pygame.image.load('./assets/image/obstacle.png')
 
     # 장애물 갯수 조절
     for i in range(3):
@@ -95,7 +102,7 @@ def initGame():
 # <-- initGame() 에서 호출!
 def runGame():
     global gamepad, clock, obstacles, background1, background2, background3, underBackground
-    global test, test2, test3, test4, jump_img, tree
+    global test, test2, test3, test4, jump_img, oc, crashed, knife
 
     # 플레이어 자동차 생성
     player = jump.Characters(VELOCITY, MASS)
@@ -117,12 +124,17 @@ def runGame():
     random.shuffle(obstacles)
     obstacle = obstacles[0]
 
-    tree_x = pad_width
-    tree_y = pad_height - tree_height
+    oc_x = pad_width
+    oc_y = pad_height - oc_height
 
     # 게임 종료를 위한 변수
-    crashed = False
-    while not crashed:
+    
+    if crashed != 0:
+        flag = False
+    else:
+        flag = True
+
+    while not flag:
         keys = pygame.key.get_pressed()
         # 스페이스키가 눌려있고, isJump가 2라면 1로 변경한다.
         # 이 작업을 해주지 않으면 스페이스가 눌려있는 상태면 플레이어가 계속 위로 올라가게 된다.
@@ -132,7 +144,7 @@ def runGame():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                crashed = True
+                crashed = 0
 
             # 화살표 키를 이용해서 플레이어의 움직임 거리를 조정해준다.
             # 키를 떼면 움직임 거리를 0으로 한다.
@@ -180,8 +192,10 @@ def runGame():
             obstacle_x -= 60
         else:
             if obstacle[0] == 1:
-                obstacle_y += 5
+                obstacle_y += 4
             obstacle_x -= 20
+            if obstacle[0] == 2:
+                obstacle_x -= 10
         # 장애물이 다 지나가면 다시 설정
         if obstacle_x <= 0:
             obstacle_x = pad_width
@@ -189,9 +203,9 @@ def runGame():
             random.shuffle(obstacles)
             obstacle = obstacles[0]
 
-        tree_x -= 20
-        if tree_x <= 0:
-            tree_x = pad_width
+        oc_x -= 20
+        if oc_x <= 0:
+            oc_x = pad_width
 
         # position
         # 캐릭터가 화면 안에서만 움직이게
@@ -209,6 +223,9 @@ def runGame():
             elif obstacle[0] == 1:
                 obstacle_width = obstacle2_width
                 obstacle_height = obstacle2_height
+            elif obstacle[0] == 2:
+                obstacle_width = knife_width
+                obstacle_height = knife_height
             
             # 원래 코드
             # if x + player.rect.x >= obstacle_x:
@@ -220,8 +237,8 @@ def runGame():
                 if(player.rect.y > obstacle_y and player.rect.y < obstacle_y + obstacle_height):
                     crash()
 
-        if(player.rect.x >= tree_x and player.rect.x <= tree_x + tree_width):
-            if(player.rect.y > tree_y and player.rect.y < tree_y + tree_height):
+        if(player.rect.x >= oc_x and player.rect.x <= oc_x + oc_width):
+            if(player.rect.y > oc_y and player.rect.y < oc_y + oc_height):
                 crash()
 
 
@@ -258,7 +275,7 @@ def runGame():
         # drawObject(underBackground, underBack_x, 0)
         if obstacle[1] != None:
             drawObject(obstacle[1], obstacle_x, obstacle_y)
-        drawObject(tree, tree_x, tree_y)
+        drawObject(oc, oc_x, oc_y)
         # 플레이어 캐릭터 화면에 그려주기
         player.draw_Characters(gamepad)
 
