@@ -6,6 +6,7 @@ import time
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
+# color
 
 pad_width = 1024
 pad_height = 512
@@ -40,7 +41,7 @@ PNUMBER = 3  # life
 
 
 def eat():
-    global PNUMBER, life
+    global PNUMBER, life, item_x
     
     if life:
         PNUMBER += 1
@@ -64,7 +65,7 @@ def increase_score():
         knives.append((0, pygame.image.load('./assets/image/knife.png')))
         obstacles.append((0, pygame.image.load('./assets/image/obstacle.png')))
         obstacles.append((1, pygame.image.load('./assets/image/obstacle2.png')))
-        movement += 2
+        movement += 5
 
 
 def draw_score():
@@ -177,7 +178,7 @@ def initGame(id):
         knives.append((i + 1, None))
     for i in range(5):
         obstacles.append((i + 2, None))
-    for i in range(20):
+    for i in range(7):
         item.append((i + 1, None))
 
     # FPS 설정을 위해 clock 생성 (runGame에서 사용 -> clock.tick(60) -> 60프레임)
